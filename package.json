@@ -5,10 +5,18 @@
   "repository": "git@github.com:felixlinker/ed-forge.git",
   "author": "willyb321 <wbwilliam7@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "babel src -d lib --copy-files --source-maps"
+  },
   "dependencies": {
     "ajv": "^6.5.4",
     "coriolis-data": "file:coriolis-data",
     "lodash": "^4.17.11",
     "pako": "^1.0.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0"
   }
 }
