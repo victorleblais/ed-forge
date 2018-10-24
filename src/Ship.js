@@ -1,13 +1,10 @@
 
 import { clone, cloneDeep, map, chain, keys, sortBy } from 'lodash';
-import { SHIP_VALIDATOR } from './validation/util';
+import { validateShipJson } from './validation/util';
 import { compress, decompress } from './compression';
 import Module, { ModuleLike } from './Module';
 import { REG_HARDPOINT_SLOT, REG_INTERNAL_SLOT, REG_MILITARY_SLOT,
     REG_UTILITY_SLOT } from './data/slots';
-
-/** @module ed-forge */
-export default Ship;
 
 /**
  * @typedef {(string|RegExp)} Slot
@@ -34,9 +31,6 @@ class Ship {
      * @property {Module[]} Modules
      */
 
-    /** @type {ShipObject} */
-    _object = null;
-
     /**
      * @typedef {Object} DistributorSettingObject
      * @property {number} base
@@ -57,26 +51,29 @@ class Ship {
      * @property {number} Fuel
      */
 
-     /** @type {StateObject} */
-    state = {
-        PowerDistributor: {
-            Sys: { base: 2, mc: 0, },
-            Eng: { base: 2, mc: 0, },
-            Wep: { base: 2, mc: 0, },
-        },
-        Cargo: 0,
-        Fuel: 1,
-    };
-
     /**
      * @param {(string|Object)} buildFrom
      */
     constructor(buildFrom) {
+        /** @type {ShipObject} */
+        this._object = null;
+        /** @type {StateObject} */
+        this.state = {
+            PowerDistributor: {
+                Sys: { base: 2, mc: 0, },
+                Eng: { base: 2, mc: 0, },
+                Wep: { base: 2, mc: 0, },
+            },
+            Cargo: 0,
+            Fuel: 1,
+        };
+
+
         if (typeof buildFrom === 'string') {
             buildFrom = decompress(buildFrom);
         }
 
-        if (!SHIP_VALIDATOR(buildFrom)) {
+        if (!validateShipJson(buildFrom)) {
             // TODO: exception handling
             return;
         }
@@ -84,7 +81,7 @@ class Ship {
         this._object = cloneDeep(buildFrom);
         this._object.Modules = map(
             this._object.Modules,
-            moduleObject => new Module(moduleObject)
+            moduleObject => new Module(moduleObject, this)
         );
     }
 
@@ -119,7 +116,8 @@ class Ship {
     getModule(slot) {
         return chain(this._object.Modules)
             .filter(m => m.isOnSlot(slot))
-            .head();
+            .head()
+            .value();
     }
 
     /**
@@ -165,6 +163,7 @@ class Ship {
                     module => chain(slots)
                         .filter(module.isOnSlot)
                         .head()
+                        .value()
                 );
         }
 
@@ -218,7 +217,8 @@ class Ship {
         }
         let slot = chain(CORE_MODULES)
             .filter(i_slot => module._object.Item.match(i_slot))
-            .head();
+            .head()
+            .value();
         if (slot) {
             return this.setModule(slot, module);
         }
@@ -246,7 +246,7 @@ class Ship {
      * @return {Module} Thrusters
      */
     getThrusters() {
-        return this.getModule('MainEngine');
+        return this.getModule('MainEngines');
     }
 
     /**
@@ -447,3 +447,6 @@ class Ship {
         return compress(this.toJSON());
     }
 }
+
+/** @module ed-forge */
+export default Ship;

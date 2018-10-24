@@ -1,13 +1,10 @@
 
 import { cloneDeep, pick, assign } from 'lodash';
-import { MODULE_VALIDATOR } from './validation/util';
+import { validateModuleJson } from './validation/util';
 import { compress, decompress } from './compression';
 import { itemFitsSlot, getItemInfo, getCoreItemInfo, getInternalItemInfo,
     getHardpointItemInfo, getUtilityItemInfo } from './data/items';
 import { getModuleProperty } from './data';
-
-/** @module ed-forge */
-export default Module;
 
 /**
  * @typedef {Object} ModifierObject
@@ -51,7 +48,7 @@ function cloneModuleToJSON(module) {
         }
         module = cloneDeep(module);
 
-        if (!MODULE_VALIDATOR(module)) {
+        if (!validateModuleJson(module)) {
             return null;
         }
     }
@@ -69,6 +66,11 @@ class Module {
      * @param {Ship} ship
      */
     constructor(buildFrom, ship) {
+        /** @type {ModuleObject} */
+        this._object = null;
+        /** @type {Ship} */
+        this._ship = null;
+
         if (!buildFrom) {
             this.clear();
         } else {
@@ -103,12 +105,6 @@ class Module {
      * @param {*} value
      */
     write(property, value) {}
-
-    /** @type {ModuleObject} */
-    _object = null;
-
-    /** @type {Ship} */
-    _ship = null;
 
     /**
      * @param {string} property
@@ -292,3 +288,6 @@ class Module {
         return !!(getCoreItemInfo(this._object.Item)[0]);
     }
 }
+
+/** @module ed-forge */
+export default Module;

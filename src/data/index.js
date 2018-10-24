@@ -1,6 +1,6 @@
 
-import coriolis from 'coriolis-data';
-import { keys, values } from 'lodash';
+import coriolis from 'coriolis-data/dist';
+import { keys, pick, values } from 'lodash';
 import { MODULE_STATS } from '../module-stats';
 
 const MODULE_STATS_KEYS = keys(MODULE_STATS);
