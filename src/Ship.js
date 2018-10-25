@@ -1,5 +1,6 @@
 
-import { clone, cloneDeep, map, chain, keys, sortBy } from 'lodash';
+import { clone, cloneDeep, map, chain, sortBy } from 'lodash';
+import autoBind from 'auto-bind';
 import { validateShipJson } from './validation/util';
 import { compress, decompress } from './compression';
 import Module, { ModuleLike } from './Module';
@@ -55,6 +56,8 @@ class Ship {
      * @param {(string|Object)} buildFrom
      */
     constructor(buildFrom) {
+        autoBind(this);
+
         /** @type {ShipObject} */
         this._object = null;
         /** @type {StateObject} */
@@ -151,21 +154,8 @@ class Ship {
      * @return {Module[]} All matching modules. Possibly empty.
      */
     getModules(slots, type, includeEmpty, sort) {
-        let ms;
-        if (typeof slots !== 'object') { // not an array
-            let m = this.getModule(slot);
-            if (m) {
-                ms = chain([m]);
-            }
-        } else {
-            ms = chain(this._object.Modules)
-                .filter(
-                    module => chain(slots)
-                        .filter(module.isOnSlot)
-                        .head()
-                        .value()
-                );
-        }
+        let ms = chain(this._object.Modules)
+            .filter(module => module.isOnSlot(slots));
 
         if (type) {
             ms = ms.filter(m => m._object.Item.match(type));

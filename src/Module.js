@@ -1,5 +1,6 @@
 
 import { cloneDeep, pick, assign } from 'lodash';
+import autoBind from 'auto-bind';
 import { validateModuleJson } from './validation/util';
 import { compress, decompress } from './compression';
 import { itemFitsSlot, getItemInfo, getCoreItemInfo, getInternalItemInfo,
@@ -66,6 +67,7 @@ class Module {
      * @param {Ship} ship
      */
     constructor(buildFrom, ship) {
+        autoBind(this);
         /** @type {ModuleObject} */
         this._object = null;
         /** @type {Ship} */
@@ -193,8 +195,10 @@ class Module {
 
     /**
      * Checks whether this module is on a matching slot.
-     * @param {Slot} slot   Slot to check; if string exact match is required, if
-     *                      RegExp only a simple match is required.
+     * @param {(Slot|Slot[])} slot  Slot to check; if string exact match is
+     *                              required, if RegExp only a simple match is
+     *                              required. If an array, one the given slots
+     *                              must match.
      * @return {(boolean|null)} True if the module is on the given slot or the
      *                          RegExp matches, false if none of this holds;
      *                          null if the slot is on no module at all.
@@ -203,8 +207,15 @@ class Module {
         if (this._object.Slot) {
             if (typeof slot === 'string') {
                 return this._object.Slot === slot;
-            } else { // RegExp
+            } else if (slot instanceof RegExp) {
                 return this._object.Slot.match(slot) !== null;
+            } else { // Array
+                for (let s of slot) {
+                    if (this.isOnSlot(s)) {
+                        return true;
+                    }
+                }
+                return false;
             }
         } else {
             return null;
@@ -242,7 +253,7 @@ class Module {
      * @return {boolean}
      */
     isEmpty() {
-        return this._object.Item !== '';
+        return this._object.Item === '';
     }
 
     /**
