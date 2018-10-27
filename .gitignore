@@ -3,3 +3,5 @@
 /node_modules
 /coriolis-data
 /.vscode
+/src/data/modules.json
+/src/data/ships.json
