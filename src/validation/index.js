@@ -18,3 +18,15 @@ export function validateModuleJson(json) {
         json
     );
 }
+
+function varIsSpecified(object, v) {
+    return Boolean(object.properties[v]);
+}
+
+export function shipVarIsSpecified(v) {
+    return varIsSpecified(SHIP_SCHEMA, v);
+}
+
+export function moduleVarIsSpecified(v) {
+    return varIsSpecified(MODULE_SCHEMA, v);
+}

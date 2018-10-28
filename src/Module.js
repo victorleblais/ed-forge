@@ -1,7 +1,7 @@
 
 import { cloneDeep, pick, assign } from 'lodash';
 import autoBind from 'auto-bind';
-import { validateModuleJson } from './validation/util';
+import { validateModuleJson, moduleVarIsSpecified } from './validation';
 import { compress, decompress } from './compression';
 import { itemFitsSlot, getItemInfo, getCoreItemInfo, getInternalItemInfo,
     getHardpointItemInfo, getUtilityItemInfo } from './data/items';
@@ -100,13 +100,21 @@ class Module {
      * @param {string} property
      * @return {*}
      */
-    read(property) {}
+    read(property) {
+        return this._object[property];
+    }
 
     /**
      * @param {string} property
      * @param {*} value
      */
-    write(property, value) {}
+    write(property, value) {
+        if (moduleVarIsSpecified(property)) {
+            // TODO: Throw error
+            return;
+        }
+        this._object[property] = value;
+    }
 
     /**
      * @param {string} property

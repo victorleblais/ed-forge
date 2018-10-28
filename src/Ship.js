@@ -1,7 +1,7 @@
 
 import { clone, cloneDeep, map, chain, sortBy } from 'lodash';
 import autoBind from 'auto-bind';
-import { validateShipJson } from './validation/util';
+import { validateShipJson, shipVarIsSpecified } from './validation';
 import { compress, decompress } from './compression';
 import Module, { ModuleLike } from './Module';
 import { REG_HARDPOINT_SLOT, REG_INTERNAL_SLOT, REG_MILITARY_SLOT,
@@ -93,7 +93,9 @@ class Ship {
      * @param {string} property
      * @return {*}
      */
-    read(property) {}
+    read(property) {
+        return this._object[property];
+    }
 
     /**
      * Write an arbitrary value to an arbitrary object property of this ship's
@@ -105,7 +107,13 @@ class Ship {
      * @param {string} property
      * @param {*} value
      */
-    write(property, value) {}
+    write(property, value) {
+        if (shipVarIsSpecified(property)) {
+            // TODO: Throw error
+            return;
+        }
+        this._object[property] = value;
+    }
 
     /**
      * Get the module that sits on a matching slot. If `slot` is a string only
