@@ -5,10 +5,16 @@ import { assertValidModule } from './items';
 import { assertValidShip } from './slots';
 
 const MODULES = require('./modules.json');
+const MODULE_CACHE = require('./module_cache.json');
 const SHIPS = require('./ships.json');
 
 export default class Factory {
-    static newModule(type) {
+    static newModule(type, clazz='', rating='') {
+        let cache = MODULE_CACHE[type];
+        if (cache) {
+            return cache[clazz][rating];
+        }
+
         assertValidModule(type);
         // We don't clone the prototype because this is done in Module
         return new Module(MODULES[type].proto);
