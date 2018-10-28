@@ -293,3 +293,9 @@ class Ship {
  * @return {string}
  */
 export function compressJson(json) {}
+
+/**
+ * @param {string} compressedBuild
+ * @return {object}
+ */
+export function decompress(compressedBuild) {}
