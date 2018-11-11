@@ -7,7 +7,9 @@
   "license": "MIT",
   "watch": {
     "build_light": {
-      "patterns": [ "src/**/*.js" ],
+      "patterns": [
+        "src/**/*.js"
+      ],
       "runOnChangeOnly": true
     }
   },
